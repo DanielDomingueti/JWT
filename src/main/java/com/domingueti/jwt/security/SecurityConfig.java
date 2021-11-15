@@ -1,5 +1,7 @@
 package com.domingueti.jwt.security;
 
+import java.lang.invoke.VarHandle.AccessMode;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,10 +32,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		CustomAuthenticationFilter c = new CustomAuthenticationFilter(authenticationManagerBean());
+		c.setFilterProcessesUrl("/api/login");
+		
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.authorizeRequests().anyRequest().permitAll();
-		http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+		http.authorizeRequests().antMatchers("/api/login").permitAll();
+		http.authorizeRequests().antMatchers("/api/user/**").hasAnyAuthority("ROLE_USER");
+		http.authorizeRequests().antMatchers("/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
+		http.authorizeRequests().anyRequest().authenticated();
+		http.addFilter(c);
 		
 	}
 
