@@ -1,4 +1,4 @@
-package com.domingueti.jwt.domain;
+package com.domingueti.jwt.user;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,8 @@ import javax.persistence.ManyToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.domingueti.jwt.role.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

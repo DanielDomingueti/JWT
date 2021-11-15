@@ -1,4 +1,4 @@
-package com.domingueti.jwt.domain;
+package com.domingueti.jwt.role;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
