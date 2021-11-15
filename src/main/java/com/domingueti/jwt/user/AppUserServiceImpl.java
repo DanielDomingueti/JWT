@@ -1,7 +1,13 @@
 package com.domingueti.jwt.user;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +21,26 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Transactional
 @Slf4j
-public class AppUserServiceImpl implements AppUserService {
+public class AppUserServiceImpl implements AppUserService, UserDetailsService{
 
 	private final AppUserRepository appUserRepository;
 	private final RoleRepository roleRepository;
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		AppUser user = appUserRepository.findByUsername(username);
+		if (user == null) {
+			 log.error("User not found in the DB");
+			 throw new UsernameNotFoundException("User not found in the DB");
+		} else {
+			log.info("User found in the DB: {}", username);			
+		}
+		Collection<SimpleGrantedAuthority> auth = new ArrayList<>();
+		user.getRoles().forEach(role -> {
+			auth.add(new SimpleGrantedAuthority(role.getName()));
+		});
+		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), auth);
+	}
 	
 	@Override
 	public AppUser saveUser(AppUser user) {
